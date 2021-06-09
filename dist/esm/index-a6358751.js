@@ -12,7 +12,6 @@ const plt = {
     rel: (el, eventName, listener, opts) => el.removeEventListener(eventName, listener, opts),
     ce: (eventName, opts) => new CustomEvent(eventName, opts),
 };
-const supportsShadow = true;
 const promiseResolve = (v) => Promise.resolve(v);
 const supportsConstructibleStylesheets = /*@__PURE__*/ (() => {
         try {
@@ -23,12 +22,6 @@ const supportsConstructibleStylesheets = /*@__PURE__*/ (() => {
         return false;
     })()
     ;
-const ORG_LOCATION_ID = 'o';
-const SLOT_NODE_ID = 's';
-const TEXT_NODE_ID = 't';
-const HYDRATE_ID = 's-id';
-const HYDRATED_STYLE_ID = 'sty-id';
-const HYDRATE_CHILD_ID = 'c-id';
 const HYDRATED_CSS = '{visibility:hidden}.hydrated{visibility:inherit}';
 const createTime = (fnName, tagName = '') => {
     {
@@ -71,11 +64,7 @@ const addStyle = (styleContainerNode, cmpMeta, mode, hostElm) => {
                 rootAppliedStyles.set(styleContainerNode, (appliedStyles = new Set()));
             }
             if (!appliedStyles.has(scopeId)) {
-                if (styleContainerNode.host && (styleElm = styleContainerNode.querySelector(`[${HYDRATED_STYLE_ID}="${scopeId}"]`))) {
-                    // This is only happening on native shadow-dom, do not needs CSS var shim
-                    styleElm.innerHTML = style;
-                }
-                else {
+                {
                     {
                         styleElm = doc.createElement('style');
                         styleElm.innerHTML = style;
@@ -217,14 +206,6 @@ const updateElement = (oldVnode, newVnode, isSvgMode, memberName) => {
     const elm = newVnode.$elm$.nodeType === 11 /* DocumentFragment */ && newVnode.$elm$.host ? newVnode.$elm$.host : newVnode.$elm$;
     const oldVnodeAttrs = (oldVnode && oldVnode.$attrs$) || EMPTY_OBJ;
     const newVnodeAttrs = newVnode.$attrs$ || EMPTY_OBJ;
-    {
-        // remove attributes no longer present on the vnode by setting them to undefined
-        for (memberName in oldVnodeAttrs) {
-            if (!(memberName in newVnodeAttrs)) {
-                setAccessor(elm, memberName, oldVnodeAttrs[memberName], undefined);
-            }
-        }
-    }
     // add new & update changed attributes
     for (memberName in newVnodeAttrs) {
         setAccessor(elm, memberName, oldVnodeAttrs[memberName], newVnodeAttrs[memberName]);
@@ -274,92 +255,8 @@ const addVnodes = (parentElm, before, parentVNode, vnodes, startIdx, endIdx) => 
         }
     }
 };
-const removeVnodes = (vnodes, startIdx, endIdx, vnode, elm) => {
-    for (; startIdx <= endIdx; ++startIdx) {
-        if ((vnode = vnodes[startIdx])) {
-            elm = vnode.$elm$;
-            // remove the vnode's element from the dom
-            elm.remove();
-        }
-    }
-};
-const updateChildren = (parentElm, oldCh, newVNode, newCh) => {
-    let oldStartIdx = 0;
-    let newStartIdx = 0;
-    let oldEndIdx = oldCh.length - 1;
-    let oldStartVnode = oldCh[0];
-    let oldEndVnode = oldCh[oldEndIdx];
-    let newEndIdx = newCh.length - 1;
-    let newStartVnode = newCh[0];
-    let newEndVnode = newCh[newEndIdx];
-    let node;
-    while (oldStartIdx <= oldEndIdx && newStartIdx <= newEndIdx) {
-        if (oldStartVnode == null) {
-            // Vnode might have been moved left
-            oldStartVnode = oldCh[++oldStartIdx];
-        }
-        else if (oldEndVnode == null) {
-            oldEndVnode = oldCh[--oldEndIdx];
-        }
-        else if (newStartVnode == null) {
-            newStartVnode = newCh[++newStartIdx];
-        }
-        else if (newEndVnode == null) {
-            newEndVnode = newCh[--newEndIdx];
-        }
-        else if (isSameVnode(oldStartVnode, newStartVnode)) {
-            patch(oldStartVnode, newStartVnode);
-            oldStartVnode = oldCh[++oldStartIdx];
-            newStartVnode = newCh[++newStartIdx];
-        }
-        else if (isSameVnode(oldEndVnode, newEndVnode)) {
-            patch(oldEndVnode, newEndVnode);
-            oldEndVnode = oldCh[--oldEndIdx];
-            newEndVnode = newCh[--newEndIdx];
-        }
-        else if (isSameVnode(oldStartVnode, newEndVnode)) {
-            patch(oldStartVnode, newEndVnode);
-            parentElm.insertBefore(oldStartVnode.$elm$, oldEndVnode.$elm$.nextSibling);
-            oldStartVnode = oldCh[++oldStartIdx];
-            newEndVnode = newCh[--newEndIdx];
-        }
-        else if (isSameVnode(oldEndVnode, newStartVnode)) {
-            patch(oldEndVnode, newStartVnode);
-            parentElm.insertBefore(oldEndVnode.$elm$, oldStartVnode.$elm$);
-            oldEndVnode = oldCh[--oldEndIdx];
-            newStartVnode = newCh[++newStartIdx];
-        }
-        else {
-            {
-                // new element
-                node = createElm(oldCh && oldCh[newStartIdx], newVNode, newStartIdx);
-                newStartVnode = newCh[++newStartIdx];
-            }
-            if (node) {
-                {
-                    oldStartVnode.$elm$.parentNode.insertBefore(node, oldStartVnode.$elm$);
-                }
-            }
-        }
-    }
-    if (oldStartIdx > oldEndIdx) {
-        addVnodes(parentElm, newCh[newEndIdx + 1] == null ? null : newCh[newEndIdx + 1].$elm$, newVNode, newCh, newStartIdx, newEndIdx);
-    }
-    else if (newStartIdx > newEndIdx) {
-        removeVnodes(oldCh, oldStartIdx, oldEndIdx);
-    }
-};
-const isSameVnode = (vnode1, vnode2) => {
-    // compare if two vnode to see if they're "technically" the same
-    // need to have the same element tag, and same key to be the same
-    if (vnode1.$tag$ === vnode2.$tag$) {
-        return true;
-    }
-    return false;
-};
 const patch = (oldVNode, newVNode) => {
     const elm = (newVNode.$elm$ = oldVNode.$elm$);
-    const oldChildren = oldVNode.$children$;
     const newChildren = newVNode.$children$;
     const text = newVNode.$text$;
     if (text === null) {
@@ -372,23 +269,11 @@ const patch = (oldVNode, newVNode) => {
                 updateElement(oldVNode, newVNode);
             }
         }
-        if (oldChildren !== null && newChildren !== null) {
-            // looks like there's child vnodes for both the old and new vnodes
-            updateChildren(elm, oldChildren, newVNode, newChildren);
-        }
-        else if (newChildren !== null) {
-            // no old child vnodes, but there are new child vnodes to add
-            if (oldVNode.$text$ !== null) {
-                // the old vnode was text, so be sure to clear it out
-                elm.textContent = '';
-            }
+        if (newChildren !== null) {
             // add the new vnode children
             addVnodes(elm, null, newVNode, newChildren, 0, newChildren.length - 1);
         }
-        else if (oldChildren !== null) {
-            // no new child vnodes, but there are old child vnodes to remove
-            removeVnodes(oldChildren, 0, oldChildren.length - 1);
-        }
+        else ;
     }
     else if (oldVNode.$text$ !== text) {
         // update the text content for the text only vnode
@@ -418,9 +303,6 @@ const attachToAncestor = (hostRef, ancestorComponent) => {
     }
 };
 const scheduleUpdate = (hostRef, isInitialLoad) => {
-    {
-        hostRef.$flags$ |= 16 /* isQueuedForUpdate */;
-    }
     if (hostRef.$flags$ & 4 /* isWaitingForChildren */) {
         hostRef.$flags$ |= 512 /* needsRerender */;
         return;
@@ -477,9 +359,6 @@ const updateComponent = async (hostRef, instance, isInitialLoad) => {
 const callRender = (hostRef, instance, elm) => {
     try {
         instance = instance.render() ;
-        {
-            hostRef.$flags$ &= ~16 /* isQueuedForUpdate */;
-        }
         {
             hostRef.$flags$ |= 2 /* hasRendered */;
         }
@@ -549,184 +428,7 @@ const then = (promise, thenFn) => {
     return promise && promise.then ? promise.then(thenFn) : thenFn();
 };
 const addHydratedFlag = (elm) => (elm.classList.add('hydrated') );
-const initializeClientHydrate = (hostElm, tagName, hostId, hostRef) => {
-    const endHydrate = createTime('hydrateClient', tagName);
-    const shadowRoot = hostElm.shadowRoot;
-    const childRenderNodes = [];
-    const slotNodes = [];
-    const shadowRootNodes = null;
-    const vnode = (hostRef.$vnode$ = newVNode(tagName, null));
-    if (!plt.$orgLocNodes$) {
-        initializeDocumentHydrate(doc.body, (plt.$orgLocNodes$ = new Map()));
-    }
-    hostElm[HYDRATE_ID] = hostId;
-    hostElm.removeAttribute(HYDRATE_ID);
-    clientHydrate(vnode, childRenderNodes, slotNodes, shadowRootNodes, hostElm, hostElm, hostId);
-    childRenderNodes.map(c => {
-        const orgLocationId = c.$hostId$ + '.' + c.$nodeId$;
-        const orgLocationNode = plt.$orgLocNodes$.get(orgLocationId);
-        const node = c.$elm$;
-        if (orgLocationNode && supportsShadow && orgLocationNode['s-en'] === '') {
-            orgLocationNode.parentNode.insertBefore(node, orgLocationNode.nextSibling);
-        }
-        if (!shadowRoot) {
-            node['s-hn'] = tagName;
-            if (orgLocationNode) {
-                node['s-ol'] = orgLocationNode;
-                node['s-ol']['s-nr'] = node;
-            }
-        }
-        plt.$orgLocNodes$.delete(orgLocationId);
-    });
-    endHydrate();
-};
-const clientHydrate = (parentVNode, childRenderNodes, slotNodes, shadowRootNodes, hostElm, node, hostId) => {
-    let childNodeType;
-    let childIdSplt;
-    let childVNode;
-    let i;
-    if (node.nodeType === 1 /* ElementNode */) {
-        childNodeType = node.getAttribute(HYDRATE_CHILD_ID);
-        if (childNodeType) {
-            // got the node data from the element's attribute
-            // `${hostId}.${nodeId}.${depth}.${index}`
-            childIdSplt = childNodeType.split('.');
-            if (childIdSplt[0] === hostId || childIdSplt[0] === '0') {
-                childVNode = {
-                    $flags$: 0,
-                    $hostId$: childIdSplt[0],
-                    $nodeId$: childIdSplt[1],
-                    $depth$: childIdSplt[2],
-                    $index$: childIdSplt[3],
-                    $tag$: node.tagName.toLowerCase(),
-                    $elm$: node,
-                    $attrs$: null,
-                    $children$: null,
-                    $key$: null,
-                    $name$: null,
-                    $text$: null,
-                };
-                childRenderNodes.push(childVNode);
-                node.removeAttribute(HYDRATE_CHILD_ID);
-                // this is a new child vnode
-                // so ensure its parent vnode has the vchildren array
-                if (!parentVNode.$children$) {
-                    parentVNode.$children$ = [];
-                }
-                // add our child vnode to a specific index of the vnode's children
-                parentVNode.$children$[childVNode.$index$] = childVNode;
-                // this is now the new parent vnode for all the next child checks
-                parentVNode = childVNode;
-                if (shadowRootNodes && childVNode.$depth$ === '0') {
-                    shadowRootNodes[childVNode.$index$] = childVNode.$elm$;
-                }
-            }
-        }
-        // recursively drill down, end to start so we can remove nodes
-        for (i = node.childNodes.length - 1; i >= 0; i--) {
-            clientHydrate(parentVNode, childRenderNodes, slotNodes, shadowRootNodes, hostElm, node.childNodes[i], hostId);
-        }
-        if (node.shadowRoot) {
-            // keep drilling down through the shadow root nodes
-            for (i = node.shadowRoot.childNodes.length - 1; i >= 0; i--) {
-                clientHydrate(parentVNode, childRenderNodes, slotNodes, shadowRootNodes, hostElm, node.shadowRoot.childNodes[i], hostId);
-            }
-        }
-    }
-    else if (node.nodeType === 8 /* CommentNode */) {
-        // `${COMMENT_TYPE}.${hostId}.${nodeId}.${depth}.${index}`
-        childIdSplt = node.nodeValue.split('.');
-        if (childIdSplt[1] === hostId || childIdSplt[1] === '0') {
-            // comment node for either the host id or a 0 host id
-            childNodeType = childIdSplt[0];
-            childVNode = {
-                $flags$: 0,
-                $hostId$: childIdSplt[1],
-                $nodeId$: childIdSplt[2],
-                $depth$: childIdSplt[3],
-                $index$: childIdSplt[4],
-                $elm$: node,
-                $attrs$: null,
-                $children$: null,
-                $key$: null,
-                $name$: null,
-                $tag$: null,
-                $text$: null,
-            };
-            if (childNodeType === TEXT_NODE_ID) {
-                childVNode.$elm$ = node.nextSibling;
-                if (childVNode.$elm$ && childVNode.$elm$.nodeType === 3 /* TextNode */) {
-                    childVNode.$text$ = childVNode.$elm$.textContent;
-                    childRenderNodes.push(childVNode);
-                    // remove the text comment since it's no longer needed
-                    node.remove();
-                    if (!parentVNode.$children$) {
-                        parentVNode.$children$ = [];
-                    }
-                    parentVNode.$children$[childVNode.$index$] = childVNode;
-                    if (shadowRootNodes && childVNode.$depth$ === '0') {
-                        shadowRootNodes[childVNode.$index$] = childVNode.$elm$;
-                    }
-                }
-            }
-            else if (childVNode.$hostId$ === hostId) {
-                // this comment node is specifcally for this host id
-                if (childNodeType === SLOT_NODE_ID) {
-                    // `${SLOT_NODE_ID}.${hostId}.${nodeId}.${depth}.${index}.${slotName}`;
-                    childVNode.$tag$ = 'slot';
-                    if (childIdSplt[5]) {
-                        node['s-sn'] = childVNode.$name$ = childIdSplt[5];
-                    }
-                    else {
-                        node['s-sn'] = '';
-                    }
-                    node['s-sr'] = true;
-                    slotNodes.push(childVNode);
-                    if (!parentVNode.$children$) {
-                        parentVNode.$children$ = [];
-                    }
-                    parentVNode.$children$[childVNode.$index$] = childVNode;
-                }
-            }
-        }
-    }
-    else if (parentVNode && parentVNode.$tag$ === 'style') {
-        const vnode = newVNode(null, node.textContent);
-        vnode.$elm$ = node;
-        vnode.$index$ = '0';
-        parentVNode.$children$ = [vnode];
-    }
-};
-const initializeDocumentHydrate = (node, orgLocNodes) => {
-    if (node.nodeType === 1 /* ElementNode */) {
-        let i = 0;
-        for (; i < node.childNodes.length; i++) {
-            initializeDocumentHydrate(node.childNodes[i], orgLocNodes);
-        }
-        if (node.shadowRoot) {
-            for (i = 0; i < node.shadowRoot.childNodes.length; i++) {
-                initializeDocumentHydrate(node.shadowRoot.childNodes[i], orgLocNodes);
-            }
-        }
-    }
-    else if (node.nodeType === 8 /* CommentNode */) {
-        const childIdSplt = node.nodeValue.split('.');
-        if (childIdSplt[0] === ORG_LOCATION_ID) {
-            orgLocNodes.set(childIdSplt[1] + '.' + childIdSplt[2], node);
-            node.nodeValue = '';
-            // useful to know if the original location is
-            // the root light-dom of a shadow dom component
-            node['s-en'] = childIdSplt[3];
-        }
-    }
-};
 const proxyComponent = (Cstr, cmpMeta, flags) => {
-    if (cmpMeta.$members$) {
-        // It's better to have a const than two Object.entries()
-        const members = Object.entries(cmpMeta.$members$);
-        members.map(([memberName, [memberFlags]]) => {
-        });
-    }
     return Cstr;
 };
 const initializeComponent = async (elm, hostRef, cmpMeta, hmrVersionId, Cstr) => {
@@ -745,17 +447,7 @@ const initializeComponent = async (elm, hostRef, cmpMeta, hmrVersionId, Cstr) =>
                 Cstr = await Cstr;
                 endLoad();
             }
-            if (!Cstr.isProxied) {
-                proxyComponent(Cstr, cmpMeta);
-                Cstr.isProxied = true;
-            }
             const endNewInstance = createTime('createInstance', cmpMeta.$tagName$);
-            // ok, time to construct the instance
-            // but let's keep track of when we start and stop
-            // so that the getters/setters don't incorrectly step on data
-            {
-                hostRef.$flags$ |= 8 /* isConstructingInstance */;
-            }
             // construct the lazy-loaded component implementation
             // passing the hostRef is very important during
             // construction in order to directly wire together the
@@ -765,9 +457,6 @@ const initializeComponent = async (elm, hostRef, cmpMeta, hmrVersionId, Cstr) =>
             }
             catch (e) {
                 consoleError(e);
-            }
-            {
-                hostRef.$flags$ &= ~8 /* isConstructingInstance */;
             }
             endNewInstance();
         }
@@ -806,13 +495,6 @@ const connectedCallback = (elm) => {
         if (!(hostRef.$flags$ & 1 /* hasConnected */)) {
             // first time this component has connected
             hostRef.$flags$ |= 1 /* hasConnected */;
-            let hostId;
-            {
-                hostId = elm.getAttribute(HYDRATE_ID);
-                if (hostId) {
-                    initializeClientHydrate(elm, cmpMeta.$tagName$, hostId, hostRef);
-                }
-            }
             {
                 // find the first ancestor component (if there is one) and register
                 // this component as one of the actively loading child components for its ancestor
@@ -820,8 +502,7 @@ const connectedCallback = (elm) => {
                 while ((ancestorComponent = ancestorComponent.parentNode || ancestorComponent.host)) {
                     // climb up the ancestors looking for the first
                     // component that hasn't finished its lifecycle update yet
-                    if ((ancestorComponent.nodeType === 1 /* ElementNode */ && ancestorComponent.hasAttribute('s-id') && ancestorComponent['s-p']) ||
-                        ancestorComponent['s-p']) {
+                    if (ancestorComponent['s-p']) {
                         // we found this components first ancestor component
                         // keep a reference to this component's ancestor component
                         attachToAncestor(hostRef, (hostRef.$ancestorComponent$ = ancestorComponent));
@@ -854,11 +535,6 @@ const bootstrapLazy = (lazyBundles, options = {}) => {
     let isBootstrapping = true;
     Object.assign(plt, options);
     plt.$resourcesUrl$ = new URL(options.resourcesUrl || './', doc.baseURI).href;
-    {
-        // If the app is already hydrated there is not point to disable the
-        // async queue. This will improve the first input delay
-        plt.$flags$ |= 2 /* appLoaded */;
-    }
     lazyBundles.map(lazyBundle => lazyBundle[1].map(compactMeta => {
         const cmpMeta = {
             $flags$: compactMeta[0],
@@ -866,9 +542,6 @@ const bootstrapLazy = (lazyBundles, options = {}) => {
             $members$: compactMeta[2],
             $listeners$: compactMeta[3],
         };
-        {
-            cmpMeta.$members$ = compactMeta[2];
-        }
         const tagName = cmpMeta.$tagName$;
         const HostElement = class extends HTMLElement {
             // StencilLazyHost
@@ -901,7 +574,7 @@ const bootstrapLazy = (lazyBundles, options = {}) => {
         cmpMeta.$lazyBundleId$ = lazyBundle[0];
         if (!exclude.includes(tagName) && !customElements.get(tagName)) {
             cmpTags.push(tagName);
-            customElements.define(tagName, proxyComponent(HostElement, cmpMeta));
+            customElements.define(tagName, proxyComponent(HostElement));
         }
     }));
     {

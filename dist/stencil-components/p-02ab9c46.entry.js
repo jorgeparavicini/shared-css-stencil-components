@@ -1,1 +1,0 @@
-import{r as t,h as n}from"./p-b1ba5d57.js";const o=class{constructor(n){t(this,n)}render(){return n("div",null,n("test-component",null),n("test-component",null),n("test-component",null),n("test-component",null),n("test-component",null),n("test-component",null),n("test-component",null))}};o.style=":host{display:block}";export{o as test2_component}

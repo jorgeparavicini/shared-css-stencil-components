@@ -1,1 +1,1 @@
-import{p as t,b as o}from"./p-b1ba5d57.js";(()=>{const o=import.meta.url,p={};return""!==o&&(p.resourcesUrl=new URL(".",o).href),t(p)})().then((t=>o([["p-4fbc1729",[[0,"test-component"]]],["p-02ab9c46",[[0,"test2-component"]]]],t)));
+import{p as t,b as o}from"./p-1f3b254c.js";(()=>{const o=import.meta.url,p={};return""!==o&&(p.resourcesUrl=new URL(".",o).href),t(p)})().then((t=>o([["p-1640031c",[[0,"test-component"]]],["p-cdbcf1b5",[[0,"test2-component"]]]],t)));
