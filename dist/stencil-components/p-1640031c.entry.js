@@ -1,1 +1,0 @@
-import{r as t,h as s}from"./p-1f3b254c.js";const o=class{constructor(s){t(this,s)}render(){return s("p",{class:"test"},"Test component")}};o.style=".test{color:red}";export{o as test_component}

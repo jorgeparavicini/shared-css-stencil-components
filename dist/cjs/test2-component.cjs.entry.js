@@ -2,7 +2,7 @@
 
 Object.defineProperty(exports, '__esModule', { value: true });
 
-const index = require('./index-e55785d4.js');
+const index = require('./index-516cd6fe.js');
 
 const test2ComponentCss = ":host{display:block}";
 
@@ -11,7 +11,7 @@ const Test2Component = class {
     index.registerInstance(this, hostRef);
   }
   render() {
-    return (index.h("div", null, index.h("test-component", null), index.h("test-component", null), index.h("test-component", null), index.h("test-component", null), index.h("test-component", null), index.h("test-component", null), index.h("test-component", null)));
+    return (index.h("div", null, index.h("test-component", null)));
   }
 };
 Test2Component.style = test2ComponentCss;

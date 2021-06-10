@@ -1,3 +1,5 @@
-import { Component } from '@stencil/core';
 export default class BaseComponent {
+  connectedCallback() {
+    console.log('Connected');
+  }
 }
