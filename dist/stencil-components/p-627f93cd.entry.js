@@ -1,1 +1,0 @@
-import{r as t,h as o}from"./p-faa06c9e.js";const s=class{constructor(o){t(this,o)}render(){return o("div",null,o("test-component",null))}};s.style=":host{display:block}";export{s as test2_component}

@@ -1,8 +1,14 @@
-import { Component, h } from '@stencil/core';
+import { Component, h, Element } from '@stencil/core';
+import { componentConnected, componentDisconnected } from 'stencil-shared-css';
 export class Test2Component {
+  connectedCallback() {
+    componentConnected(this.element, this);
+  }
+  componentDisconnected() {
+    componentDisconnected(this.element);
+  }
   render() {
-    return (h("div", null,
-      h("test-component", null)));
+    return h("p", { class: "test" }, "Hello World");
   }
   static get is() { return "test2-component"; }
   static get encapsulation() { return "shadow"; }
@@ -12,4 +18,5 @@ export class Test2Component {
   static get styleUrls() { return {
     "$": ["test2-component.css"]
   }; }
+  static get elementRef() { return "element"; }
 }
