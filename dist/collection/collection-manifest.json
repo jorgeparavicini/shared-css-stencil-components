@@ -1,5 +1,6 @@
 {
   "entries": [
+    "./components/bootstrap-test/bootstrap-test.js",
     "./components/test-component/test-component.js",
     "./components/test2-component/test2-component.js"
   ],

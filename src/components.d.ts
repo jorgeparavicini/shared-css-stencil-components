@@ -6,12 +6,23 @@
  */
 import { HTMLStencilElement, JSXBase } from "@stencil/core/internal";
 export namespace Components {
+    interface BootstrapTest {
+        "count": number;
+        "startTime": number;
+    }
     interface TestComponent {
     }
     interface Test2Component {
+        "styleConnected"?: () => void;
     }
 }
 declare global {
+    interface HTMLBootstrapTestElement extends Components.BootstrapTest, HTMLStencilElement {
+    }
+    var HTMLBootstrapTestElement: {
+        prototype: HTMLBootstrapTestElement;
+        new (): HTMLBootstrapTestElement;
+    };
     interface HTMLTestComponentElement extends Components.TestComponent, HTMLStencilElement {
     }
     var HTMLTestComponentElement: {
@@ -25,16 +36,23 @@ declare global {
         new (): HTMLTest2ComponentElement;
     };
     interface HTMLElementTagNameMap {
+        "bootstrap-test": HTMLBootstrapTestElement;
         "test-component": HTMLTestComponentElement;
         "test2-component": HTMLTest2ComponentElement;
     }
 }
 declare namespace LocalJSX {
+    interface BootstrapTest {
+        "count"?: number;
+        "startTime"?: number;
+    }
     interface TestComponent {
     }
     interface Test2Component {
+        "styleConnected"?: () => void;
     }
     interface IntrinsicElements {
+        "bootstrap-test": BootstrapTest;
         "test-component": TestComponent;
         "test2-component": Test2Component;
     }
@@ -43,6 +61,7 @@ export { LocalJSX as JSX };
 declare module "@stencil/core" {
     export namespace JSX {
         interface IntrinsicElements {
+            "bootstrap-test": LocalJSX.BootstrapTest & JSXBase.HTMLAttributes<HTMLBootstrapTestElement>;
             "test-component": LocalJSX.TestComponent & JSXBase.HTMLAttributes<HTMLTestComponentElement>;
             "test2-component": LocalJSX.Test2Component & JSXBase.HTMLAttributes<HTMLTest2ComponentElement>;
         }

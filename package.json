@@ -16,7 +16,8 @@
   ],
   "scripts": {
     "copy-css": "copy-css",
-    "build": "stencil build --docs && copy-css",
+    "build": "stencil build --docs",
+    "build:copy": "stencil build --docs && copy-css",
     "start": "stencil build --dev --watch --serve",
     "test": "stencil test --spec --e2e",
     "test.watch": "stencil test --spec --e2e --watchAll",

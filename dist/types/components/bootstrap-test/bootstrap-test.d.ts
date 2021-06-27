@@ -1,7 +1,9 @@
-export declare class Test2Component {
+export declare class BootstrapTest {
   private element;
-  styleConnected?: () => void;
+  count: number;
+  startTime: number;
   connectedCallback(): void;
   componentDisconnected(): void;
   render(): any;
+  private connected;
 }

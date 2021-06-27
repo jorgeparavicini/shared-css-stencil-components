@@ -1,4 +1,4 @@
-import { Component, h, Element } from '@stencil/core';
+import { Component, h, Element, Prop } from '@stencil/core';
 import { componentConnected, componentDisconnected } from 'stencil-shared-css';
 
 @Component({
@@ -10,12 +10,14 @@ export class Test2Component {
   @Element()
   private element: HTMLElement;
 
+  @Prop() styleConnected?: () => void;
+
   connectedCallback() {
-    componentConnected(this.element, this);
+    componentConnected(this.element, this, this.styleConnected);
   }
 
   componentDisconnected() {
-    componentDisconnected(this.element);
+    componentDisconnected(this.element, this);
   }
 
   render() {
